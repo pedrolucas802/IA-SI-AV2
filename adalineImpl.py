@@ -1,12 +1,13 @@
 import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
-
-from util import EQM
+from util import EQM, gerar_dados
 
 # matplotlib.use("TkAgg")
 
-Data = np.loadtxt('DataAV2.csv', delimiter=',')
+# Data = np.loadtxt('DataAV2.csv', delimiter=',')
+Data = gerar_dados()
+
 X = Data[:, :-1]
 y = Data[:, -1]
 
@@ -45,10 +46,10 @@ while (epoch < maxEpoch and abs(EQM1 - EQM2) > pr):
         e_t = (d_t - u_t)
         w = w + lr * e_t * x_t
 
-    if(epoch == 0):
-        x_axis = np.linspace(-15, 8, 100)
-        x2 = w[0, 0] / w[2, 0] - x_axis * (w[1, 0] / w[2, 0])
-        plt.plot(x_axis, x2, color='yellow')
+    # if(epoch == 0):
+    #     x_axis = np.linspace(-15, 8, 100)
+    #     x2 = w[0, 0] / w[2, 0] - x_axis * (w[1, 0] / w[2, 0])
+    #     plt.plot(x_axis, x2, color='yellow')
 
     epoch += 1
     print("epoch: "+str(epoch))

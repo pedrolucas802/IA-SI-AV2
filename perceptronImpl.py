@@ -1,8 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from util import sign
+from util import sign, gerar_dados, perceptron_decision_boundary_3d_plotly
 
-Data = np.loadtxt('DataAV2.csv', delimiter=',')
+# matplotlib.use("TkAgg")
+
+
+# Data = np.loadtxt('DataAV2.csv', delimiter=',')
+Data = gerar_dados()
+
 # def perceptron(data, LR, )
 
 X = Data[:, :-1]
@@ -61,6 +66,7 @@ plt.plot(x_axis, x2, color='green')
 plt.show()
 # y = w1x1 + w2x2 -w0
 
+# perceptron_decision_boundary_3d_plotly(X, y, w)
 
 print("Final weights (w):")
 print(w)
