@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from util import sign, gerar_dados, perceptron_decision_boundary_3d_plotly
+from util import sign, gerar_dados, divide_data
 
 # matplotlib.use("TkAgg")
 
@@ -8,35 +8,20 @@ from util import sign, gerar_dados, perceptron_decision_boundary_3d_plotly
 # Data = np.loadtxt('DataAV2.csv', delimiter=',')
 Data = gerar_dados()
 
-# def perceptron(data, LR, )
-
-X = Data[:, :-1]
-y = Data[:, -1]
+X, y, X_teste, y_teste = divide_data(Data[:, :-1], Data[:, -1])
 
 N, p = X.shape
-
-plt.scatter(X[y == 1, 0], X[y == 1, 1], color='blue', edgecolors='k', label='Class 1')
-plt.scatter(X[y == -1, 0], X[y == -1, 1], color='red', edgecolors='k', label='Class -1')
-
-# plt.xlim(-0.25, 6.2)
-# plt.ylim(-0.25, 6.2)
-plt.xlim(X[:, 0].min() - 1, X[:, 0].max() + 1)
-plt.ylim(X[:, 1].min() - 1, X[:, 1].max() + 1)
-
-
 X = X.T
-
-X = np.concatenate((
-    -np.ones((1, N)), X
-))
+X = np.concatenate((-np.ones((1, N)), X))
 
 LR = 0.001
 erro = True
-max_epoch = 100
+max_epoch = 10
 epoch = 0
 
 w = np.zeros((p + 1, 1))
 
+#train
 while erro and epoch < max_epoch:
     erro = False
     w_anterior = w
@@ -55,18 +40,23 @@ while erro and epoch < max_epoch:
             erro = True
             e += 1
 
-    print("epoch: "+str(epoch))
+    print("epoch training: "+str(epoch))
     epoch += 1
 
 
+print("Training weights (w):")
+print(w)
+
+plt.scatter(X_teste[y_teste == 1, 0], X_teste[y_teste == 1, 1], color='blue', edgecolors='k', label='Class 1')
+plt.scatter(X_teste[y_teste == -1, 0], X_teste[y_teste == -1, 1], color='red', edgecolors='k', label='Class -1')
+
+plt.xlim(X_teste[:, 0].min() - 1, X_teste[:, 0].max() + 1)
+plt.ylim(X_teste[:, 1].min() - 1, X_teste[:, 1].max() + 1)
+
 x_axis = np.linspace(-15,8,100)
 x2 = w[0,0]/w[2,0] - x_axis*(w[1,0]/w[2,0])
+
+
 plt.plot(x_axis, x2, color='green')
 
 plt.show()
-# y = w1x1 + w2x2 -w0
-
-# perceptron_decision_boundary_3d_plotly(X, y, w)
-
-print("Final weights (w):")
-print(w)

@@ -1,9 +1,11 @@
+from datetime import datetime
 from typing import Any
 from random import random as rd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 import matplotlib.pyplot as plt
+
 
 def sign(u):
     if u >= 0:
@@ -23,28 +25,26 @@ def EQM(X, y, w):
         d_t = y[t]
         seq += (d_t - u_t) ** 2
 
-    return (seq / (2 * N))[0,0]
+    return (seq / (2 * N))[0, 0]
 
 
-def embaralhar_dados(
-    X: np.ndarray[Any, np.dtype[Any]], y: np.ndarray[Any, np.dtype[Any]]
-):
-    seed = np.random.permutation(X.shape[0])
-    X_random = X[seed, :]
-    y_random = y[seed, :]
-    return (X_random, y_random)
+def shuffle_data(X, y):
+    np.random.seed(0)
+    N = X.shape[0]
+    seed = np.random.permutation(N)
+    X_random = X[seed]
+    y_random = y[seed]
+    return X_random, y_random
 
-def processar_dados(
-    X: np.ndarray[Any, np.dtype[Any]], y: np.ndarray[Any, np.dtype[Any]]
-):
-    N, _ = X.shape
-
-    (X_random, y_random) = embaralhar_dados(X, y)
-    X_treino = X_random[0 : int(N * 0.8), :]
-    y_treino = y_random[0 : int(N * 0.8), :]
-    X_teste = X_random[int(N * 0.8) :, :]
-    y_teste = y_random[int(N * 0.8) :, :]
-    return (X_treino, y_treino, X_teste, y_teste, X_random, y_random)
+def divide_data(X, y, train_ratio=0.8):
+    X_random, y_random = shuffle_data(X, y)
+    N = X_random.shape[0]
+    N_train = int(N * train_ratio)
+    X_treino = X_random[:N_train, :]
+    y_treino = y_random[:N_train]
+    X_teste = X_random[N_train:, :]
+    y_teste = y_random[N_train:]
+    return X_treino, y_treino, X_teste, y_teste
 
 
 def gerar_dados():
@@ -76,28 +76,34 @@ def gerar_dados():
     return np.array(np.concatenate((X, Y), axis=1))
 
 
-def perceptron_decision_boundary_3d_plotly(X, y, w):
-    N, p = X.shape
+def printar_progresso(valor):
+    inicio = datetime.now()
+    agora = datetime.now()
+    delta = agora - inicio
+    print(
+        f"\rProgresso de classificação: {valor:.2%}. Tempo decorrido: {int(delta.total_seconds())} segundos.",
+        end="",
+    )
 
-    # Create a 3D scatter plot
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+def plot_results(w):
+    x_axis = np.linspace(-15, 8, 100)
+    x2 = w[0, 0] / w[2, 0] - x_axis * (w[1, 0] / w[2, 0])
+    plt.plot(x_axis, x2, color='green')
 
-    ax.scatter(X[y == 1, 0], X[y == 1, 1], X[y == 1, 2], color='blue', label='Class 1')
-    ax.scatter(X[y == -1, 0], X[y == -1, 1], X[y == -1, 2], color='red', label='Class -1')
-
-    # Create a grid for the decision boundary
-    x_grid, y_grid = np.meshgrid(np.linspace(X[:, 0].min() - 1, X[:, 0].max() + 1, 100),
-                                 np.linspace(X[:, 1].min() - 1, X[:, 1].max() + 1, 100))
-    z_grid = (-w[0, 0] - w[1, 0] * x_grid - w[2, 0] * y_grid) / w[3, 0]
-
-    # Plot the decision boundary surface
-    ax.plot_surface(x_grid, y_grid, z_grid, color='green', alpha=0.3)
-
-    ax.set_xlabel('X-axis')
-    ax.set_ylabel('Y-axis')
-    ax.set_zlabel('Z-axis')
-    ax.set_title('Perceptron Decision Boundary (3D)')
-
-    plt.legend(loc='best')
     plt.show()
+
+
+def plot_scatter(X, y):
+    plt.scatter(X[y == 1, 0], X[y == 1, 1], color='blue', edgecolors='k', label='Class 1')
+    plt.scatter(X[y == -1, 0], X[y == -1, 1], color='red', edgecolors='k', label='Class -1')
+
+    plt.xlim(X[:, 0].min() - 1, X[:, 0].max() + 1)
+    plt.ylim(X[:, 1].min() - 1, X[:, 1].max() + 1)
+
+
+
+
+
+
+
+
