@@ -45,7 +45,7 @@ def perceptron_fixed_iterator(r):
     for i in tqdm(range(r), desc="Perceptron", bar_format=f"{bar_format}", ncols=100):
         result = perceptron(fixed_data)
         perceptron_results.append(result)
-        print(f"\rFixed perceptron: {i}/{r}", end='')
+        # print(f"\rFixed perceptron: {i}/{r}", end='')
         print()
 
     print_stats(perceptron_results)

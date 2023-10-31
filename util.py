@@ -36,7 +36,7 @@ def shuffle_data(X, y):
     y_random = y[seed]
     return X_random, y_random
 
-def divide_data(X, y, train_rt=0.75):
+def divide_data(X, y, train_rt):
     X_random, y_random = shuffle_data(X, y)
     N = X_random.shape[0]
     N_train = int(N * train_rt)
