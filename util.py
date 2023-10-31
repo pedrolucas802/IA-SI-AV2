@@ -36,7 +36,7 @@ def shuffle_data(X, y):
     y_random = y[seed]
     return X_random, y_random
 
-def divide_data(X, y, train_rt):
+def divide_data(X, y, train_rt=0.75):
     X_random, y_random = shuffle_data(X, y)
     N = X_random.shape[0]
     N_train = int(N * train_rt)
@@ -134,13 +134,39 @@ def print_stats(data):
     max_accuracy = np.max(data)
     min_accuracy = np.min(data)
 
+    print("")
+    print("------------------------------------------------")
+    print("Stats")
     print("Mean Accuracy:", mean_accuracy)
     print("Standard Deviation:", std_deviation)
     print("Maximum Accuracy:", max_accuracy)
     print("Minimum Accuracy:", min_accuracy)
+    print("")
+    print("------------------------------------------------")
+    print("")
 
 
 
+
+def plot_final_graph(W, data):
+    X_treino, y_treino, X_teste, y_teste = divide_data(data[:, :-1], data[:, -1])
+    x_axis = np.linspace(-15, 8, 100)
+    plt.scatter(X_teste[y_teste == 1, 0], X_teste[y_teste == 1, 1], color='blue', edgecolors='k', label='Class 1')
+    plt.scatter(X_teste[y_teste == -1, 0], X_teste[y_teste == -1, 1], color='red', edgecolors='k', label='Class -1')
+
+    plt.xlim(X_teste[:, 0].min() - 1, X_teste[:, 0].max() + 1)
+    plt.ylim(X_teste[:, 1].min() - 1, X_teste[:, 1].max() + 1)
+    for i in range(len(W)):
+        w = W[i]
+        x2 = w[0, 0] / w[2, 0] - x_axis * (w[1, 0] / w[2, 0])
+        plt.plot(x_axis, x2, color='pink')
+
+    # mean_w = np.array(np.mean(W, axis=0))
+    mean_w = np.mean(W, axis=0)
+    x2 = mean_w[0, 0] / mean_w[2, 0] - x_axis * (mean_w[1, 0] / mean_w[2, 0])
+    plt.plot(x_axis, x2, color='green')
+
+    plt.show()
 
 
 

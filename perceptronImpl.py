@@ -3,7 +3,7 @@ from util import sign, divide_data, plot_results, calculate_accuracy
 
 # matplotlib.use("TkAgg")
 def perceptron(Data):
-    X_treino, y_treino, X_teste, y_teste = divide_data(Data[:, :-1], Data[:, -1], 0.75)
+    X_treino, y_treino, X_teste, y_teste = divide_data(Data[:, :-1], Data[:, -1])
 
     N, p = X_treino.shape
     X_treino = X_treino.T
@@ -48,6 +48,6 @@ def perceptron(Data):
     # print("y_teste")
     # print(y_teste)
 
-    return calculate_accuracy(X_teste, y_teste, w)
+    return calculate_accuracy(X_teste, y_teste, w), w
 
     # print("Accuracy: {:.2f}%".format(accuracy_percentage))

@@ -6,7 +6,7 @@ import time as my_time
 
 from adalineImpl import adaline
 from perceptronImpl import perceptron
-from util import gerar_dados, print_stats
+from util import gerar_dados, print_stats, plot_final_graph
 
 fixed_data = np.loadtxt('DataAV2.csv', delimiter=',')
 bar_format="{l_bar}\033[91m{bar}\033[0m{r_bar}"
@@ -41,14 +41,16 @@ def adaline_generated_iterator(r):
 
 def perceptron_fixed_iterator(r):
     perceptron_results = []
+    perceptron_weights = []
 
     for i in tqdm(range(r), desc="Perceptron", bar_format=f"{bar_format}", ncols=100):
         result = perceptron(fixed_data)
-        perceptron_results.append(result)
-        # print(f"\rFixed perceptron: {i}/{r}", end='')
-        print()
+        perceptron_results.append(result[0])
+        perceptron_weights.append(result[1])
+        my_time.sleep(0.1)
 
     print_stats(perceptron_results)
+    plot_final_graph(perceptron_weights, fixed_data)
 
 
 def adaline_fixed_iterator(r):

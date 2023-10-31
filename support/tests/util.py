@@ -1,31 +1,19 @@
-from typing import Any
-from random import random as rd
 import numpy as np
-import matplotlib.pyplot as plt
 
+# Your array of arrays
+array_of_arrays = [
+    [[-0.066], [0.01468805], [0.01359335]],
+    [[-0.066], [0.01468805], [0.01359335]],
+    [[-0.066], [0.01468805], [0.01359335]]
+]
 
-def perceptron_decision_boundary_3d_plotly(X, y, w):
-    N, p = X.shape
+# Convert the array of arrays to a NumPy array
+array = np.array(array_of_arrays)
 
-    # Create a 3D scatter plot
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+# Calculate the mean of each column
+column_means = np.mean(array, axis=0)
 
-    ax.scatter(X[y == 1, 0], X[y == 1, 1], X[y == 1, 2], color='blue', label='Class 1')
-    ax.scatter(X[y == -1, 0], X[y == -1, 1], X[y == -1, 2], color='red', label='Class -1')
+# Convert the result back to a list
+result = column_means.tolist()
 
-    # Create a grid for the decision boundary
-    x_grid, y_grid = np.meshgrid(np.linspace(X[:, 0].min() - 1, X[:, 0].max() + 1, 100),
-                                 np.linspace(X[:, 1].min() - 1, X[:, 1].max() + 1, 100))
-    z_grid = (-w[0, 0] - w[1, 0] * x_grid - w[2, 0] * y_grid) / w[3, 0]
-
-    # Plot the decision boundary surface
-    ax.plot_surface(x_grid, y_grid, z_grid, color='green', alpha=0.3)
-
-    ax.set_xlabel('X-axis')
-    ax.set_ylabel('Y-axis')
-    ax.set_zlabel('Z-axis')
-    ax.set_title('Perceptron Decision Boundary (3D)')
-
-    plt.legend(loc='best')
-    plt.show()
+print(result)
