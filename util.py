@@ -36,10 +36,10 @@ def shuffle_data(X, y):
     y_random = y[seed]
     return X_random, y_random
 
-def divide_data(X, y, train_ratio=0.8):
+def divide_data(X, y, train_rt=0.75):
     X_random, y_random = shuffle_data(X, y)
     N = X_random.shape[0]
-    N_train = int(N * train_ratio)
+    N_train = int(N * train_rt)
     X_treino = X_random[:N_train, :]
     y_treino = y_random[:N_train]
     X_teste = X_random[N_train:, :]
@@ -85,8 +85,13 @@ def printar_progresso(valor):
         end="",
     )
 
-def plot_results(w):
+def plot_results(X, y, w):
     x_axis = np.linspace(-15, 8, 100)
+    plt.scatter(X[y == 1, 0], X[y == 1, 1], color='blue', edgecolors='k', label='Class 1')
+    plt.scatter(X[y == -1, 0], X[y == -1, 1], color='red', edgecolors='k', label='Class -1')
+
+    plt.xlim(X[:, 0].min() - 1, X[:, 0].max() + 1)
+    plt.ylim(X[:, 1].min() - 1, X[:, 1].max() + 1)
     x2 = w[0, 0] / w[2, 0] - x_axis * (w[1, 0] / w[2, 0])
     plt.plot(x_axis, x2, color='green')
 
@@ -99,6 +104,40 @@ def plot_scatter(X, y):
 
     plt.xlim(X[:, 0].min() - 1, X[:, 0].max() + 1)
     plt.ylim(X[:, 1].min() - 1, X[:, 1].max() + 1)
+
+
+def calculate_accuracy(X_test, y_test, w):
+    correct = 0
+    total = len(y_test)
+
+    for i in range(len(X_test)):
+        x_t = np.concatenate((np.array([-1]), X_test[i]))
+        u_t = np.dot(w.T, x_t)[0]
+        y_t = np.sign(u_t)
+
+        if y_t > 0 and y_test[i] == 1:
+            correct += 1
+        elif y_t <= 0 and y_test[i] == -1:
+            correct += 1
+
+    accuracy = (correct / total) * 100
+    # print(f"Accuracy: {accuracy:.2f}%")
+
+    return accuracy
+
+
+
+def print_stats(data):
+
+    mean_accuracy = np.mean(data)
+    std_deviation = np.std(data)
+    max_accuracy = np.max(data)
+    min_accuracy = np.min(data)
+
+    print("Mean Accuracy:", mean_accuracy)
+    print("Standard Deviation:", std_deviation)
+    print("Maximum Accuracy:", max_accuracy)
+    print("Minimum Accuracy:", min_accuracy)
 
 
 

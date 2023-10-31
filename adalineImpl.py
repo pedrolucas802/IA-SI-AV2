@@ -1,63 +1,52 @@
-import matplotlib
 import numpy as np
-import matplotlib.pyplot as plt
-from util import EQM, gerar_dados
+from util import EQM, divide_data, plot_results, calculate_accuracy
 
 # matplotlib.use("TkAgg")
 
-# Data = np.loadtxt('DataAV2.csv', delimiter=',')
-Data = gerar_dados()
+def adaline(Data):
 
-X = Data[:, :-1]
-y = Data[:, -1]
+    X_treino, y_treino, X_teste, y_teste = divide_data(Data[:, :-1], Data[:, -1])
 
-N, p = X.shape
 
-plt.scatter(X[y == 1, 0], X[y == 1, 1], color='blue', edgecolors='k', label='Class 1')
-plt.scatter(X[y == -1, 0], X[y == -1, 1], color='red', edgecolors='k', label='Class -1')
+    N, p = X_treino.shape
 
-plt.xlim(X[:, 0].min() - 1, X[:, 0].max() + 1)
-plt.ylim(X[:, 1].min() - 1, X[:, 1].max() + 1)
+    X_treino = X_treino.T
 
-X = X.T
+    X_treino = np.concatenate((
+        -np.ones((1, N)), X_treino
+    ))
 
-X = np.concatenate((
-    -np.ones((1, N)), X
-))
+    lr = 1e-4
+    pr = 1e-15
 
-lr = 1e-4
-pr = 1e-12
+    maxEpoch = 1000
 
-maxEpoch = 1000
+    epoch = 0
+    EQM1 = 1
+    EQM2 = 0
 
-epoch = 0
-EQM1 = 1
-EQM2 = 0
+    # w = np.zeros((p + 1, 1))
+    w = np.random.random_sample((p + 1, 1))-.5
 
-# w = np.zeros((p + 1, 1))
-w = np.random.random_sample((p + 1, 1))-.5
+    while (epoch < maxEpoch and abs(EQM1 - EQM2) > pr):
+        EQM1 = EQM(X_treino, y_treino, w)
+        for t in range(N):
+            x_t = X_treino[:, t].reshape(p + 1, 1)
+            u_t = w.T @ x_t
+            d_t = y_treino[t]
+            e_t = (d_t - u_t)
+            w = w + lr * e_t * x_t
 
-while (epoch < maxEpoch and abs(EQM1 - EQM2) > pr):
-    EQM1 = EQM(X, y, w)
-    for t in range(N):
-        x_t = X[:, t].reshape(p + 1, 1)
-        u_t = w.T @ x_t
-        d_t = y[t]
-        e_t = (d_t - u_t)
-        w = w + lr * e_t * x_t
+        # if(epoch == 0):
+        #     x_axis = np.linspace(-15, 8, 100)
+        #     x2 = w[0, 0] / w[2, 0] - x_axis * (w[1, 0] / w[2, 0])
+        #     plt.plot(x_axis, x2, color='yellow')
 
-    # if(epoch == 0):
-    #     x_axis = np.linspace(-15, 8, 100)
-    #     x2 = w[0, 0] / w[2, 0] - x_axis * (w[1, 0] / w[2, 0])
-    #     plt.plot(x_axis, x2, color='yellow')
+        epoch += 1
+        # print("epoch: "+str(epoch))
+        EQM2 = EQM(X_treino, y_treino, w)
 
-    epoch += 1
-    print("epoch: "+str(epoch))
-    EQM2 = EQM(X, y, w)
 
-x_axis = np.linspace(-15,8,100)
-x2 = w[0,0]/w[2,0] - x_axis*(w[1,0]/w[2,0])
-plt.plot(x_axis, x2, color='green')
+    # plot_results(X_teste,y_teste, w)
 
-plt.show()
-# y = w1x1 + w2x2 -w0
+    return calculate_accuracy(X_teste,y_teste, w)
