@@ -27,6 +27,24 @@ def EQM(X, y, w):
 
     return (seq / (2 * N))[0, 0]
 
+def mlp_EQM(Xtreino, QTD_L, w, y):
+    EQM = 0
+    QtdAmostrasTreino = len(Xtreino)
+
+    for xamostra, d in Xtreino:
+        # Forward(xamostra)
+        EQI = 0
+
+        for j in range(QTD_L):
+            EQI += (d[j] - y[QTD_L - 1][j]) ** 2
+
+        EQM += EQI
+
+    EQM /= (2 * QtdAmostrasTreino)
+    return EQM
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
 
 def shuffle_data(X, y):
     np.random.seed(0)
@@ -127,27 +145,6 @@ def calculate_accuracy(X_test, y_test, w):
 
 
 
-def print_stats(data):
-
-    mean_accuracy = np.mean(data)
-    std_deviation = np.std(data)
-    max_accuracy = np.max(data)
-    min_accuracy = np.min(data)
-
-    print("")
-    print("------------------------------------------------")
-    print("Stats")
-    print("Mean Accuracy:", mean_accuracy)
-    print("Standard Deviation:", std_deviation)
-    print("Maximum Accuracy:", max_accuracy)
-    print("Minimum Accuracy:", min_accuracy)
-    print("")
-    print("------------------------------------------------")
-    print("")
-
-
-
-
 def plot_final_graph(W, data):
     X_treino, y_treino, X_teste, y_teste = divide_data(data[:, :-1], data[:, -1])
     x_axis = np.linspace(-15, 8, 100)
@@ -167,6 +164,24 @@ def plot_final_graph(W, data):
     plt.plot(x_axis, x2, color='green')
 
     plt.show()
+
+def plot_hyperplane_graph(data,w, title, filename):
+    X_treino, y_treino, X_teste, y_teste = divide_data(data[:, :-1], data[:, -1])
+    x_axis = np.linspace(-15, 8, 100)
+    plt.scatter(X_teste[y_teste == 1, 0], X_teste[y_teste == 1, 1], color='blue', edgecolors='k', label='Class 1')
+    plt.scatter(X_teste[y_teste == -1, 0], X_teste[y_teste == -1, 1], color='red', edgecolors='k', label='Class -1')
+
+    plt.xlim(X_teste[:, 0].min() - 1, X_teste[:, 0].max() + 1)
+    plt.ylim(X_teste[:, 1].min() - 1, X_teste[:, 1].max() + 1)
+
+    x2 = w[0, 0] / w[2, 0] - x_axis * (w[1, 0] / w[2, 0])
+    plt.plot(x_axis, x2, color='green')
+    plt.title(title)
+    plt.show()
+
+    # plt.figure()
+    # plt.legend()
+    # plt.savefig("result_graphs/" + filename)
 
 
 
