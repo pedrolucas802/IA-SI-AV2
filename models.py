@@ -6,7 +6,7 @@ import time as my_time
 
 from adaline_impl import adaline
 from perceptron_impl import perceptron
-from util_stats import print_accuracy_stats, calc_confusion_matrix, complete_stats_plot
+from util_stats import print_accuracy_stats, calc_confusion_matrix, complete_stats_plot, calc_plot_confusion_matrix
 from util import gerar_dados, plot_final_graph
 
 fixed_data = np.loadtxt('DataAV2.csv', delimiter=',')
@@ -61,11 +61,15 @@ def perceptron_fixed_data(r):
     perceptron_results = []
     perceptron_weights = []
 
+
     for i in tqdm(range(r), desc="Perceptron", bar_format=f"{loading_bar_format}", ncols=100):
         result = perceptron(fixed_data)
         perceptron_results.append(result[0])
         perceptron_weights.append(result[1])
         my_time.sleep(0.1)
+
+
+    # calc_plot_confusion_matrix(fixed_data, perceptron_weights[len(perceptron_weights) - 1])
 
     complete_stats_plot(perceptron_results, perceptron_weights, fixed_data)
 

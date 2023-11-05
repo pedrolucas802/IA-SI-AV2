@@ -5,7 +5,7 @@ import os
 
 
 # folderRoot = 'faces\\faces\\'
-def organize_images():
+def organize_images(size):
     folderRoot = 'faces/'
     individual = ['an2i', 'at33', 'boland', 'bpm', 'ch4f', 'cheyer', 'choon', 'danieln', 'glickman', 'karyadi',
                   'kawamura', 'kk49', 'megak', 'mitchell', 'night', 'phoebe', 'saavik', 'steffi', 'sz24', 'tammo']
@@ -21,7 +21,7 @@ def organize_images():
                    '_up_angry_open', '_up_angry_sunglasses', '_up_happy_open', '_up_happy_sunglasses',
                    '_up_neutral_open', '_up_neutral_sunglasses', '_up_sad_open', '_up_sad_sunglasses']
 
-    Red = 60
+    Red = size
     X = np.empty((Red * Red, 0))
     Y = np.empty((len(individual), 0))
 
@@ -66,4 +66,4 @@ def organize_images():
     return X, Y
 
 
-organize_images()
+organize_images(60)

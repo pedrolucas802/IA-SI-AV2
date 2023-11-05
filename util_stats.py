@@ -50,6 +50,21 @@ def calc_plot_confusion_matrix(data, w):
     print("")
     print("------------------------------------------------")
 
+
+def calc_accuracy_confusion_matrix(X_teste,y_teste, w):
+
+    X_teste = np.concatenate((-np.ones((1, X_teste.shape[0])), X_teste.T))
+    predictions = np.sign(w.T @ X_teste).flatten()
+
+    VP = np.sum((predictions == 1) & (y_teste == 1))
+    VN = np.sum((predictions == -1) & (y_teste == -1))
+    FP = np.sum((predictions == 1) & (y_teste == -1))
+    FN = np.sum((predictions == -1) & (y_teste == 1))
+
+    acuracia = (VP + VN) / (VP + VN + FP + FN)
+    return acuracia
+
+
 def calc_confusion_matrix(data, w):
     X_treino, y_treino, X_teste, y_teste = divide_data(data[:, :-1], data[:, -1])
 
@@ -64,14 +79,14 @@ def calc_confusion_matrix(data, w):
     return VP, VN, FP, FN
 
 
-def complete_stats_plot(perceptron_results, perceptron_weights, data):
-    mean_accuracy = np.mean(perceptron_results)
-    std_deviation_accuracy = np.std(perceptron_results)
-    max_accuracy = np.max(perceptron_results)
-    min_accuracy = np.min(perceptron_results)
+def complete_stats_plot(results, weights, data):
+    mean_accuracy = np.mean(results)
+    std_deviation_accuracy = np.std(results)
+    max_accuracy = np.max(results)
+    min_accuracy = np.min(results)
 
-    best_round = np.argmax(perceptron_results)
-    worst_round = np.argmin(perceptron_results)
+    best_round = np.argmax(results)
+    worst_round = np.argmin(results)
 
     table = PrettyTable()
     table.field_names = ["Metric", "Mean", "Std Deviation", "Max", "Min"]
@@ -80,7 +95,7 @@ def complete_stats_plot(perceptron_results, perceptron_weights, data):
     sensitivities = []
     specificities = []
 
-    for w in perceptron_weights:
+    for w in weights:
         VP, VN, FP, FN = calc_confusion_matrix(data, w)
         sensitivity = VP / (VP + FN)
         specificity = VN / (VN + FP)
@@ -105,8 +120,8 @@ def complete_stats_plot(perceptron_results, perceptron_weights, data):
 
     print(table)
 
-    best_w = perceptron_weights[best_round]
-    worst_w = perceptron_weights[worst_round]
+    best_w = weights[best_round]
+    worst_w = weights[worst_round]
 
     # print(best_w)
     # print(worst_w)

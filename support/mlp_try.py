@@ -4,7 +4,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from organiza_imagens import organize_images
 
-X, Y = organize_images()
+X, Y = organize_images(50)
 class MLP(nn.Module):
     def __init__(self, input_size, hidden_size, num_classes):
         super(MLP, self).__init__()

@@ -1,22 +1,47 @@
 import numpy as np
 from organiza_imagens import organize_images
 
+
+def shuffle_data(X, y):
+    np.random.seed(0)
+    N = X.shape[1]  # Assuming X has shape (features, samples)
+    seed = np.random.permutation(N)
+    X_random = X[:, seed]
+    y_random = y[:, seed]  # Shuffle the labels using the same permutation
+    return X_random, y_random
+
+def divide_data(X, y, train_rt=0.8):
+    X_random, y_random = shuffle_data(X, y)
+    N = X_random.shape[1]  # Assuming X_random has shape (features, samples)
+    N_train = int(N * train_rt)
+    X_treino = X_random[:, :N_train]
+    y_treino = y_random[:, :N_train]
+    X_teste = X_random[:, N_train:]
+    y_teste = y_random[:, N_train:]
+    return X_treino, y_treino, X_teste, y_teste
+
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
+
+
 def tanH(x):
     return (1 - np.exp(-x)) / (1 + np.exp(-x))
+
 
 def tanh(x):
     return np.tanh(x)
 
+
 def sigmoid_derivative(x):
     return x * (1 - x)
+
 
 def calculate_EQM(X_train, Y, W, L):
     EQM = 0
 
     for i in range(X_train.shape[1]):
         x = X_train[:, i].reshape(-1, 1)
+        y = [None] * (L + 1)
         forward(x, W, y)
         d = Y[:, i]
 
@@ -31,6 +56,7 @@ def calculate_EQM(X_train, Y, W, L):
 
     return EQM
 
+
 def forward(x, w, y):
     for j in range(len(w)):
         if j == 0:
@@ -42,6 +68,7 @@ def forward(x, w, y):
             y[j] = tanh(i)
     return y
 
+
 def backward(W, x, d, delta, lr):
     j = len(W) - 1
 
@@ -50,19 +77,33 @@ def backward(W, x, d, delta, lr):
             delta[j] = tanh(y[j]) * (d - y[j])
             y_bias = y[j - 1]
             y_bias = np.concatenate((np.array([[-1] * y_bias.shape[1]]), y_bias), axis=0)
-            W[j] = W[j] + lr * (delta[j] @ y_bias.T)  # Matrix multiplication using @
+            # W[j] = W[j] + lr * (delta[j] @ y_bias.T)  # Matrix multiplication using @
+            W[j] = W[j] + lr * (delta[j] @ y_bias[j - 1].T)
         elif j == 0:
             Wb = W[j + 1].T[:, 1:]
             delta[j] = tanh(y[j]) * (delta[j + 1] @ Wb)
-            W[j] = W[j] + lr * (delta[j] @ x.T)  # Matrix multiplication using @
+            W[j] = W[j] + lr * (delta[j] @ y_bias.T)
         else:
             Wb = W[j + 1].T[:, 1:]
             delta[j] = tanh(y[j]) * (delta[j + 1] @ Wb.T)
             y_bias = np.concatenate((np.array([[-1] * y[j - 1].shape[1]]), y[j - 1]), axis=0)
-            W[j] = W[j] + lr * (delta[j] @ y_bias.T)  # Matrix multiplication using @
+            W[j] = W[j] + lr * (delta[j] @ y_bias.T)
         j -= 1
 
-X, Y = organize_images()
+
+def test_MLP(Xteste, W):
+    predictions = []
+    for xamostra in Xteste.T:
+        xamostra = xamostra.reshape(-1, 1)
+        y = [None] * len(W)
+        forward(xamostra, W, y)
+        predicted_class = np.argmax(y[-1])
+        predictions.append(predicted_class)
+    return np.array(predictions)
+
+X_og, Y_og = organize_images(50)
+X, Y, X_teste, y_teste = divide_data(X_og, Y_og)
+
 print(X)
 print(Y)
 
@@ -101,4 +142,9 @@ while EQM > pr and epoch < max_epochs:
     epoch += 1
     print("Epoch:", epoch, "EQM:", EQM)
 
-print("Training completed. Final EQM:", EQM)
+
+predictions = test_MLP(X_teste, W)
+
+
+print(" Final EQM:", EQM)
+

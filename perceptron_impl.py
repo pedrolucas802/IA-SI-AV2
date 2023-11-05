@@ -1,57 +1,50 @@
 import numpy as np
 
-from util_stats import calc_confusion_matrix
+# You may need to replace these imports with your actual utility functions
+from util_stats import calc_confusion_matrix, calc_plot_confusion_matrix, calc_accuracy_confusion_matrix
 from util import sign, divide_data, plot_results, calculate_accuracy
 
-# matplotlib.use("TkAgg")
 def perceptron(Data):
+    # Split the data into training and testing sets
     X_treino, y_treino, X_teste, y_teste = divide_data(Data[:, :-1], Data[:, -1])
 
-    N, p = X_treino.shape
+    # Transpose the training data
     X_treino = X_treino.T
-    X_treino = np.concatenate((-np.ones((1, N)), X_treino))
 
+    # Add a row of -1s as the first row in the training data
+    X_treino = np.concatenate((-np.ones((1, X_treino.shape[1])), X_treino))
+
+    # Learning rate and other hyperparameters
     LR = 0.0001
-    erro = True
-    max_epoch = 400
-    epoch = 0
+    max_epoch = 1000
 
-    # w = np.zeros((p + 1, 1))
+    # Initialize weights with random values
+    p = X_treino.shape[0] - 1
     w = np.random.rand(p + 1, 1)
 
-
-    while erro and epoch < max_epoch:
+    # Training loop
+    for epoch in range(max_epoch):
         erro = False
-        w_anterior = w
         e = 0
-        for t in range(N):
+
+        for t in range(X_treino.shape[1]):
             x_t = X_treino[:, t].reshape((p + 1, 1))
             u_t = (w.T @ x_t)[0, 0]
 
             y_t = sign(u_t)
-            # d_t = y[t, 0]
             d_t = y_treino[t]
 
-            e_t = int(d_t - y_t)
+            e_t = d_t - y_t
             w = w + (e_t * x_t * LR) / 2
+
             if y_t != d_t:
                 erro = True
                 e += 1
 
-        # print("epoch training: "+str(epoch))
-        epoch += 1
+        # If there are no errors, stop early
+        if not erro:
+            break
 
-    # print(epoch)
-    # print("Training weights (w):")
-    # print(w)
+    accuracy = calc_accuracy_confusion_matrix(X_teste, y_teste, w)
 
-    # plot_results(X_teste,y_teste, w)
-
-    # print("X_teste")
-    # print(X_teste)
-    # print("y_teste")
-    # print(y_teste)
-
-    return calculate_accuracy(X_teste, y_teste, w), w
-
-    # print("Accuracy: {:.2f}%".format(accuracy_percentage))
+    return accuracy, w

@@ -1,5 +1,7 @@
 import numpy as np
 from util import EQM, divide_data, plot_results, calculate_accuracy
+from util_stats import calc_accuracy_confusion_matrix
+
 
 # matplotlib.use("TkAgg")
 
@@ -49,4 +51,5 @@ def adaline(Data):
 
     # plot_results(X_teste,y_teste, w)
 
-    return calculate_accuracy(X_teste,y_teste, w), w, epoch
+    return calc_accuracy_confusion_matrix(X_teste,y_teste, w), w, epoch
+    # return calculate_accuracy(X_teste,y_teste, w), w, epoch
